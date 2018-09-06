@@ -49,6 +49,7 @@ router.post('/upload', upload.single(process.env.AVATAR_FIELD), function(req, re
 
 	var files;
 	var file = req.file.filename;
+	console.log(file)
 	var matches = file.match(/^(.+?)_.+?\.(.+)$/i);
 
 	if (matches) {

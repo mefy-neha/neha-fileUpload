@@ -20,7 +20,7 @@ var limits = {
 	fileSize: 1024 * 1024, // 1 MB (max file size)
 };
 
-var fileFilter = function(req, file, cb) {
+var fileFilter = function (req, file, cb) {
 	// supported image file mimetypes
 	var allowedMimes = ['image/jpeg', 'image/pjpeg', 'image/png', 'image/gif'];
 
@@ -41,11 +41,11 @@ var upload = multer({
 });
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
+router.get('/', function (req, res, next) {
 	res.render('index', { title: 'Upload Avatar', avatar_field: process.env.AVATAR_FIELD });
 });
 
-router.post('/upload', upload.single(process.env.AVATAR_FIELD), function(req, res, next) {
+router.post('/upload', upload.single(process.env.AVATAR_FIELD), function (req, res, next) {
 
 	var files;
 	var file = req.file.filename;
@@ -53,14 +53,14 @@ router.post('/upload', upload.single(process.env.AVATAR_FIELD), function(req, re
 	var matches = file.match(/^(.+?)_.+?\.(.+)$/i);
 
 	if (matches) {
-		files = _.map(['lg', 'md', 'sm'], function(size) {
+		files = _.map(['lg', 'md', 'sm'], function (size) {
 			return matches[1] + '_' + size + '.' + matches[2];
 		});
 	} else {
 		files = [file];
 	}
 
-	files = _.map(files, function(file) {
+	files = _.map(files, function (file) {
 		var port = req.app.get('port');
 		var base = req.protocol + '://' + req.hostname + (port ? ':' + port : '');
 		var url = path.join(req.file.baseUrl, file).replace(/[\\\/]+/g, '/').replace(/^[\/]+/g, '');
@@ -69,7 +69,10 @@ router.post('/upload', upload.single(process.env.AVATAR_FIELD), function(req, re
 	});
 
 	res.json({
-		images: files
+		error: false,
+		images: files,
+		imageId: fileId[0],
+		message: "file upload successful."
 	});
 
 });

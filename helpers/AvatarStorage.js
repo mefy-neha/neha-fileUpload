@@ -11,7 +11,7 @@ var streamifier = require('streamifier');
 // Configure UPLOAD_PATH
 // process.env.AVATAR_STORAGE contains uploads/avatars
 
-console.log("path", __dirname);
+console.log("path", process.env.AVATAR_STORAGE);
 
 var UPLOAD_PATH = path.resolve(__dirname, '..', process.env.AVATAR_STORAGE);
 

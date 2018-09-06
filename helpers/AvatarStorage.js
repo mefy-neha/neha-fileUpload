@@ -10,13 +10,16 @@ var streamifier = require('streamifier');
 
 // Configure UPLOAD_PATH
 // process.env.AVATAR_STORAGE contains uploads/avatars
+
+console.log("path", __dirname);
+
 var UPLOAD_PATH = path.resolve(__dirname, '..', process.env.AVATAR_STORAGE);
 
 // create a multer storage engine
-var AvatarStorage = function(options) {
+var AvatarStorage = function (options) {
 
     // this serves as a constructor
-	function AvatarStorage(opts) {
+    function AvatarStorage(opts) {
 
         var baseUrl = process.env.AVATAR_BASE_URL;
 
@@ -39,7 +42,7 @@ var AvatarStorage = function(options) {
         options = _.extend(defaultOptions, options);
 
         // check the options for correct values and use fallback value where necessary
-        this.options = _.forIn(options, function(value, key, object) {
+        this.options = _.forIn(options, function (value, key, object) {
 
             switch (key) {
 
@@ -48,7 +51,7 @@ var AvatarStorage = function(options) {
                 case 'responsive':
                     object[key] = _.isBoolean(value) ? value : defaultOptions[key];
                     break;
-                    
+
                 case 'storage':
                     value = String(value).toLowerCase();
                     object[key] = _.includes(allowedStorageSystems, value) ? value : defaultOptions[key];
@@ -63,19 +66,19 @@ var AvatarStorage = function(options) {
                     value = _.isFinite(value) ? value : Number(value);
                     object[key] = (value && value >= 0 && value <= 100) ? value : defaultOptions[key];
                     break;
-                    
+
                 case 'threshold':
                     value = _.isFinite(value) ? value : Number(value);
                     object[key] = (value && value >= 0) ? value : defaultOptions[key];
                     break;
 
             }
-            
+
         });
 
         // set the upload path
         this.uploadPath = this.options.responsive ? path.join(UPLOAD_PATH, 'responsive') : UPLOAD_PATH;
-        
+
         // set the upload base url
         this.uploadBaseUrl = this.options.responsive ? path.join(baseUrl, 'responsive') : baseUrl;
 
@@ -86,24 +89,24 @@ var AvatarStorage = function(options) {
 
     }
 
-	// this generates a random cryptographic filename
-    AvatarStorage.prototype._generateRandomFilename = function() {
+    // this generates a random cryptographic filename
+    AvatarStorage.prototype._generateRandomFilename = function () {
         // create pseudo random bytes
-	    var bytes = crypto.pseudoRandomBytes(32);
-    
+        var bytes = crypto.pseudoRandomBytes(32);
+
         // create the md5 hash of the random bytes
         var checksum = crypto.createHash('MD5').update(bytes).digest('hex');
-    
+
         // return as filename the hash with the output extension
         return checksum + '.' + this.options.output;
     };
 
-	// this creates a Writable stream for a filepath
-    AvatarStorage.prototype._createOutputStream = function(filepath, cb) {
-        
+    // this creates a Writable stream for a filepath
+    AvatarStorage.prototype._createOutputStream = function (filepath, cb) {
+
         // create a reference for this to use in local functions
         var that = this;
-        
+
         // create a writable stream from the filepath
         var output = fs.createWriteStream(filepath);
 
@@ -111,7 +114,7 @@ var AvatarStorage = function(options) {
         output.on('error', cb);
 
         // set handler for the finish event
-        output.on('finish', function() {
+        output.on('finish', function () {
             cb(null, {
                 destination: that.uploadPath,
                 baseUrl: that.uploadBaseUrl,
@@ -124,8 +127,8 @@ var AvatarStorage = function(options) {
         return output;
     };
 
-	// this processes the Jimp image buffer
-    AvatarStorage.prototype._processImage = function(image, cb) {
+    // this processes the Jimp image buffer
+    AvatarStorage.prototype._processImage = function (image, cb) {
 
         // create a reference for this to use in local functions
         var that = this;
@@ -141,7 +144,7 @@ var AvatarStorage = function(options) {
 
         // create a clone of the Jimp image
         var clone = image.clone();
-        
+
         // fetch the Jimp image dimensions
         var width = clone.bitmap.width;
         var height = clone.bitmap.height;
@@ -174,7 +177,7 @@ var AvatarStorage = function(options) {
             // fetch the new image dimensions and crop
             clone = clone.crop((clone.bitmap.width - square) / 2, (clone.bitmap.height - square) / 2, square, square);
         }
-        
+
         // convert the image to greyscale if enabled
         if (this.options.greyscale) {
             clone = clone.greyscale();
@@ -186,7 +189,7 @@ var AvatarStorage = function(options) {
         if (this.options.responsive) {
 
             // map through  the responsive sizes and push them to the batch
-            batch = _.map(sizes, function(size) {
+            batch = _.map(sizes, function (size) {
 
                 var outputStream;
 
@@ -229,9 +232,9 @@ var AvatarStorage = function(options) {
         }
 
         // process the batch sequence
-        _.each(batch, function(current) {
+        _.each(batch, function (current) {
             // get the buffer of the Jimp image using the output mime type
-            current.image.getBuffer(mime, function(err, buffer) {
+            current.image.getBuffer(mime, function (err, buffer) {
                 if (that.options.storage == 'local') {
                     // create a read stream from the buffer and pipe it to the output stream
                     streamifier.createReadStream(buffer).pipe(current.stream);
@@ -241,40 +244,40 @@ var AvatarStorage = function(options) {
 
     };
 
-	// multer requires this for handling the uploaded file	
-	AvatarStorage.prototype._handleFile = function(req, file, cb) {
+    // multer requires this for handling the uploaded file	
+    AvatarStorage.prototype._handleFile = function (req, file, cb) {
 
         // create a reference for this to use in local functions
         var that = this;
-        
+
         // create a writable stream using concat-stream that will
         // concatenate all the buffers written to it and pass the
         // complete buffer to a callback fn
-		var fileManipulate = concat(function(imageData) {
+        var fileManipulate = concat(function (imageData) {
 
             // read the image buffer with Jimp
             // it returns a promise
             Jimp.read(imageData)
-                .then(function(image) {
+                .then(function (image) {
                     // process the Jimp image buffer
                     that._processImage(image, cb);
                 })
                 .catch(cb);
-		});
+        });
 
         // write the uploaded file buffer to the fileManipulate stream
-		file.stream.pipe(fileManipulate);
+        file.stream.pipe(fileManipulate);
 
-	};
+    };
 
-	// multer requires this for destroying file	
-	AvatarStorage.prototype._removeFile = function(req, file, cb) {
+    // multer requires this for destroying file	
+    AvatarStorage.prototype._removeFile = function (req, file, cb) {
 
         var matches, pathsplit;
         var filename = file.filename;
         var _path = path.join(this.uploadPath, filename);
         var paths = [];
-        
+
         // delete the file properties
         delete file.filename;
         delete file.destination;
@@ -287,7 +290,7 @@ var AvatarStorage = function(options) {
             matches = pathsplit.pop().match(/^(.+?)_.+?\.(.+)$/i);
 
             if (matches) {
-                paths = _.map(['lg', 'md', 'sm'], function(size) {
+                paths = _.map(['lg', 'md', 'sm'], function (size) {
                     return pathsplit.join('/') + '/' + (matches[1] + '_' + size + '.' + matches[2]);
                 });
             }
@@ -296,14 +299,14 @@ var AvatarStorage = function(options) {
         }
 
         // delete the files from the filesystem
-		_.each(paths, function(_path) {
+        _.each(paths, function (_path) {
             fs.unlink(_path, cb);
         });
 
-	};
+    };
 
-	// create a new instance with the passed options and return it
-	return new AvatarStorage(options);
+    // create a new instance with the passed options and return it
+    return new AvatarStorage(options);
 
 };
 

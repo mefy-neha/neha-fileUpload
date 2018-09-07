@@ -8,13 +8,13 @@ var dotenv = require('dotenv').config();
 
 var index = require('./routes/index');
 var users = require('./routes/users');
-
+var mongoose = require('mongoose');
 var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
-
+mongoose.connect('mongodb://127.0.0.1:27017/photo-uploader-app');
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
@@ -44,4 +44,15 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
+//on successful connection
+mongoose.connection.on('connected', () => {
+  console.log('Connected to mongodb!!');
+});
+
+//on error
+mongoose.connection.on('error', (err) => {
+  if (err) {
+      console.log('Error in db is :' + err);
+  }
+});
 module.exports = app;

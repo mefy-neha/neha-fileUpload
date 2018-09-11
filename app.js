@@ -22,19 +22,21 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
+/****************ROUTING MODULE********/
+const doctorRoute = require('./routes/doctorRoute');
 app.use('/', index);
 app.use('/users', users);
+app.use('/doctor', doctorRoute)
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   var err = new Error('Not Found');
   err.status = 404;
   next(err);
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
@@ -52,7 +54,7 @@ mongoose.connection.on('connected', () => {
 //on error
 mongoose.connection.on('error', (err) => {
   if (err) {
-      console.log('Error in db is :' + err);
+    console.log('Error in db is :' + err);
   }
 });
 module.exports = app;

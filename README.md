@@ -28,6 +28,7 @@ AVATAR_STORAGE=public/uploads/avatars
 
 ```js
 var port = normalizePort(process.env.PORT || '5000');
+console.log('path',port)
 ```
 
 - Finally, start the demo app by running the following command:

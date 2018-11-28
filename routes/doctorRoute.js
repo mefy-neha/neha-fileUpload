@@ -17,7 +17,7 @@ router.post('/create', (request, response) => {
         description: request.body.description,
     });
     console.log(data);
-    data.save((error, result) => {
+    data.insert((error, result) => {
         console.log(error);
         console.log(result);
         if (error) {
@@ -57,43 +57,43 @@ router.post('/create', (request, response) => {
 
 
 /********************GET DOCTOR SPECIALTY LIST By SEARCH & FILTER  */
-// router.get('/bySpecialty', (request, response) => {
-//     let searchResponse = {};
-//     console.log('filterdata', request.query.speciality)
-//     if (request.query.length !== 0) {
-//         doctor.find({
-//             speciality: { '$regex': request.query.speciality, '$options': 'i' }  //$regx IS USED FOR ,Provides regular expression capabilities for pattern matching strings in queries
-//         }).exec(function (error, result) {
-//             if (error) {
-//                 searchResponse.error = true;
-//                 searchResponse.message = `Error :` + error.message;
-//                 response.status(500).json(searchResponse);
-//             } else if (result) {
-//                 searchResponse.error = false;
-//                 searchResponse.specialitylist = result;
-//                 searchResponse.message = ` getting doctor speciality successfully.`;
-//                 response.status(200).json(searchResponse);
+router.get('/bySpecialty', (request, response) => {
+    let searchResponse = {};
+    console.log('filterdata', request.query.speciality)
+    if (request.query.length !== 0) {
+        doctor.find({
+            speciality: { '$regex': request.query.speciality, '$options': 'i' }  //$regx IS USED FOR ,Provides regular expression capabilities for pattern matching strings in queries
+        }).exec(function (error, result) {
+            if (error) {
+                searchResponse.error = true;
+                searchResponse.message = `Error :` + error.message;
+                response.status(500).json(searchResponse);
+            } else if (result) {
+                searchResponse.error = false;
+                searchResponse.specialitylist = result;
+                searchResponse.message = ` getting doctor speciality successfully.`;
+                response.status(200).json(searchResponse);
 
-//             }
-//         });
-//     }
-//     else {
-//         doctor.find({}, (error, result) => {
-//             if (error) {
-//                 searchResponse.error = true;
-//                 searchResponse.message = `Error :` + error.message;
-//                 response.status(500).json(searchResponse);
-//             } else if (result) {
-//                 searchResponse.error = false;
-//                 searchResponse.result = result;
-//                 searchResponse.message = ` getting doctor speciality successfully.`;
-//                 response.status(200).json(searchResponse);
+            }
+        });
+    }
+    else {
+        doctor.find({}, (error, result) => {
+            if (error) {
+                searchResponse.error = true;
+                searchResponse.message = `Error :` + error.message;
+                response.status(500).json(searchResponse);
+            } else if (result) {
+                searchResponse.error = false;
+                searchResponse.result = result;
+                searchResponse.message = ` getting doctor speciality successfully.`;
+                response.status(200).json(searchResponse);
 
-//             }
+            }
 
-//         })
-//     }
-// });
+        })
+    }
+});
 /****************************END OF THIS API************************ */
 //Api to Delete Speciality
 router.delete('/delete', (request, response) => {

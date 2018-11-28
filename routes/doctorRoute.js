@@ -101,7 +101,7 @@ router.delete('/delete', (request, response) => {
 
     let deleteResponse = {};
     let specialityId = request.query.specialityId;
-    doctor.remove({ _id: specialityId }, (error, result) => {
+    doctor.deleteOne({ _id: specialityId }, (error, result) => {
         if (error) {
             deleteResponse.error = true;
             deleteResponse.message = `Error :` + error.message;

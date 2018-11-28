@@ -14,6 +14,8 @@ var app = express();
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
+mongoose.set('useCreateIndex', true)
+mongoose.connect(config.dbUri, { useNewUrlParser: true })
 mongoose.connect('mongodb://127.0.0.1:27017/neha-fileUpload');
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));

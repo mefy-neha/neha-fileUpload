@@ -16,7 +16,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 mongoose.set('useCreateIndex', true);
 
-mongoose.connect('mongodb://127.0.0.1:27017/neha-fileUpload',{useNewUrlParser: true },(err,res)=>{
+mongoose.connect('mongodb://127.0.0.1:27017/neha-fileUpload',{ autoIndex: false },(err,res)=>{
 console.log('errrr',err)
 // console.log('resss',res)
 

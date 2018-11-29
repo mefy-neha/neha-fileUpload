@@ -55,6 +55,14 @@ app.use(function (err, req, res, next) {
   res.render('error');
 });
 
+app.set('port', port);
+console.log('Server is running', port)
+/**
+ * Create HTTP server.
+ */
+
+var server = http.createServer(app);
+
 //on successful connection
 mongoose.connection.on('connected', () => {
   console.log('Connected to mongodb!!');
@@ -68,14 +76,6 @@ mongoose.connection.on('error', (err) => {
 });
 module.exports = app;
 
-
-app.set('port', port);
-console.log('Server is running', port)
-/**
- * Create HTTP server.
- */
-
-var server = http.createServer(app);
 
 /**
  * Listen on provided port, on all network interfaces.

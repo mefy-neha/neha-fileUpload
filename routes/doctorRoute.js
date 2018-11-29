@@ -17,7 +17,7 @@ router.post('/create', (request, response) => {
         description: request.body.description,
     });
     console.log(data);
-    data.insert((error, result) => {
+    data.save((error, result) => {
         console.log(error);
         console.log(result);
         if (error) {
@@ -101,7 +101,7 @@ router.delete('/delete', (request, response) => {
 
     let deleteResponse = {};
     let specialityId = request.query.specialityId;
-    doctor.deleteOne({ _id: specialityId }, (error, result) => {
+    doctor.remove({ _id: specialityId }, (error, result) => {
         if (error) {
             deleteResponse.error = true;
             deleteResponse.message = `Error :` + error.message;

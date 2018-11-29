@@ -4,7 +4,7 @@ const doctorSchema = mongoose.Schema({
 
     speciality: {
         type: String,
-        // unique: true,
+        unique: true,
     },
     description: {
         type: String

@@ -134,7 +134,7 @@ router.post('/uploaded', (request, response) => {
                 file: image
             });
 
-            data.insert((error, result) => {
+            data.save((error, result) => {
                 if (error) {
                     imageResponse.error = true;
                     imageResponse.message = `Error :` + error.message;

@@ -10,7 +10,6 @@ var users = require('./routes/users');
 var mongoose = require('mongoose');
 var app = express();
 
-var app = require('../app');
 var port = normalizePort(process.env.PORT || '5000');
 app.set('port', port);
 

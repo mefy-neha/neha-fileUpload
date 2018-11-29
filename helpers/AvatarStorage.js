@@ -11,9 +11,9 @@ var streamifier = require('streamifier');
 // Configure UPLOAD_PATH
 // process.env.AVATAR_STORAGE contains uploads/avatars
 
-console.log("path......", process.env.AVATAR_STORAGE);
+console.log("path......", "public/uploads/avatars");
 
-var UPLOAD_PATH = path.resolve(__dirname, '..', process.env.AVATAR_STORAGE);
+var UPLOAD_PATH = path.resolve(__dirname, '..', "public/uploads/avatars");
 
 // create a multer storage engine
 var AvatarStorage = function (options) {
@@ -21,7 +21,7 @@ var AvatarStorage = function (options) {
     // this serves as a constructor
     function AvatarStorage(opts) {
 
-        var baseUrl = process.env.AVATAR_BASE_URL;
+        var baseUrl = "/uploads/avatars";
 
         var allowedStorageSystems = ['local'];
         var allowedOutputFormats = ['jpg', 'png'];

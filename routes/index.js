@@ -15,90 +15,90 @@ var upload = multer({ dest: 'fileUpload/' });
 /**************API FOR  ONLY IMAGE POST AND GET**************************** */
 // setup a new instance of the AvatarStorage engine 
 var storage = AvatarStorage({
-	square: true,
-	responsive: true,
-	greyscale: true,
-	quality: 90
+    square: true,
+    responsive: true,
+    greyscale: true,
+    quality: 90
 });
 
 var limits = {
-	files: 1, // allow only 1 file per request
-	fileSize: 1024 * 1024, // 1 MB (max file size)
+    files: 1, // allow only 1 file per request
+    fileSize: 1024 * 1024, // 1 MB (max file size)
 };
 
 var fileFilter = function (req, file, cb) {
-	// supported image file mimetypes
-	var allowedMimes = ['image/jpeg', 'image/pjpeg', 'image/png', 'image/gif'];
+    // supported image file mimetypes
+    var allowedMimes = ['image/jpeg', 'image/pjpeg', 'image/png', 'image/gif'];
 
-	if (_.includes(allowedMimes, file.mimetype)) {
-		// allow supported image files
-		cb(null, true);
-	} else {
-		// throw error for invalid files
-		cb(new Error('Invalid file type. Only jpg, png and gif image files are allowed.'));
-	}
+    if (_.includes(allowedMimes, file.mimetype)) {
+        // allow supported image files
+        cb(null, true);
+    } else {
+        // throw error for invalid files
+        cb(new Error('Invalid file type. Only jpg, png and gif image files are allowed.'));
+    }
 };
 
 // setup multer
 var upload = multer({
-	storage: storage,
-	limits: limits,
-	fileFilter: fileFilter
+    storage: storage,
+    limits: limits,
+    fileFilter: fileFilter
 });
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
-	res.render('index', { title: 'Upload Avatar', avatar_field: process.env.AVATAR_FIELD });
+    res.render('index', { title: 'Upload Avatar', avatar_field: 'avatar' });
 });
 
-router.post('/upload', upload.single(process.env.AVATAR_FIELD), function (req, res, next) {
+router.post('/upload', upload.single('avatar'), function (req, res, next) {
 
-	var files;
-	var file = req.file.filename;
-	var fileId=file.split('_')
-	console.log('fileId',fileId)
-	console.log(file)
-	var matches = file.match(/^(.+?)_.+?\.(.+)$/i);
-let imageResponse={}
-	if (matches) {
-		files = _.map(['lg', 'md', 'sm'], function (size) {
-			return matches[1] + '_' + size + '.' + matches[2];
-		});
-	} else {
-		files = [file];
-	}
+    var files;
+    var file = req.file.filename;
+    var fileId = file.split('_')
+    console.log('fileId', fileId)
+    console.log(file)
+    var matches = file.match(/^(.+?)_.+?\.(.+)$/i);
+    let imageResponse = {}
+    if (matches) {
+        files = _.map(['lg', 'md', 'sm'], function (size) {
+            return matches[1] + '_' + size + '.' + matches[2];
+        });
+    } else {
+        files = [file];
+    }
 
-	files = _.map(files, function (file) {
-		var port = req.app.get('port');
-		var base = req.protocol + '://' + req.hostname + (port ? ':' + port : '');
-		var url = path.join(req.file.baseUrl, file).replace(/[\\\/]+/g, '/').replace(/^[\/]+/g, '');
+    files = _.map(files, function (file) {
+        var port = req.app.get('port');
+        var base = req.protocol + '://' + req.hostname + (port ? ':' + port : '');
+        var url = path.join(req.file.baseUrl, file).replace(/[\\\/]+/g, '/').replace(/^[\/]+/g, '');
 
-		return (req.file.storage == 'local' ? base : '') + '/' + url;
-	});
-	// console.log('dfgsdhfshdfb...............',res.json(imageResponse.file.originalname))
-	// console.log(res.json(imageResponse))
+        return (req.file.storage == 'local' ? base : '') + '/' + url;
+    });
+    // console.log('dfgsdhfshdfb...............',res.json(imageResponse.file.originalname))
+    // console.log(res.json(imageResponse))
 
-	res.json({
-		error: false,
-		images: files,
-		imageId: fileId[0],
-		message: "file uploaded successful.",
-		// response:res.file
-		
-	});
+    res.json({
+        error: false,
+        images: files,
+        imageId: fileId[0],
+        message: "file uploaded successful.",
+        // response:res.file
+
+    });
 
 });
 //storage for files
 var storagee = multer.diskStorage({
     destination: function (request, file, cb) {
-		cb(null, './fileUpload')
-	},
-	
+        cb(null, './fileUpload')
+    },
+
     filename: function (request, file, cb) {
-		cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname))
-		
-	}
-	
+        cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname))
+
+    }
+
 });
 /************** END OF API FOR  ONLY IMAGE POST AND GET**************************** */
 
@@ -107,7 +107,7 @@ var storagee = multer.diskStorage({
 
 router.post('/uploaded', (request, response) => {
     var image;
- let imageResponse = {};
+    let imageResponse = {};
 
     var upload = multer({
         storage: storagee,
@@ -115,12 +115,12 @@ router.post('/uploaded', (request, response) => {
             var ext = path.extname(file.originalname);
             cb(null, true)
         }
-	}).single('file');
+    }).single('file');
 
     upload(request, response, function (error) {
 
         if (error) {
-  console.log('erorr',error)
+            console.log('erorr', error)
             // throw error;
             imageResponse.error = true;
             imageResponse.message = `Error :` + error.message;
